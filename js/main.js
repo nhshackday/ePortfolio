@@ -26,7 +26,7 @@ $(function () {
     .done(function (html) {
         var data = $('li a', $(html));
 
-        status.text('<h2>Roles</h2>');
+        status.html('<h2>Roles</h2>');
 
         var roles = data.each(function () {
             var t = $(this).text();
