@@ -20,7 +20,7 @@ $(function () {
                 xhr.setRequestHeader('Authorization', make_base_auth(username, password));
                 xhr.withCredentials = true;
             },
-            url: 'https://api.nhseportfolios.org/Users/' + username,
+            url: 'https://api2.nhseportfolios.org/Users/' + username,
             crossDomain: true
         })
     .done(function (html) {
