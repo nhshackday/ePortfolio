@@ -21,9 +21,19 @@
             <p class="chromeframe">You are using an outdated web browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- Add your site or application content here -->
+        <script data-main="js/main" src="js/jQuery.js"></script>
+        <script data-main="js/main" src="js/main.js"></script>
+
         <h1>My ePortfolio</h1>
 
-        <script data-main="js/main" src="js/require.js"></script>
+        <p>Please login first:</p>
+
+        <form>
+            <input type="text" id="username" required placeholder="username" />
+            <input type="password" id="password" required placeholder="password" />
+            <input type="submit" id="login" value="Login" />
+        </form>
+
+        <div class="status"></div>
     </body>
 </html>
