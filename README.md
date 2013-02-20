@@ -6,6 +6,13 @@ This is the HTML5 mobile app for the [NHS ePortfolio](https://www.nhseportfolios
 
 Follow us on Twitter [@NESePortfolio](http://twitter.com/NESePortfolio).
 
+## Authors
+
+**Ben Collins**
+
++ [http://twitter.com/ben555](http://twitter.com/ben555)
++ [https://github.com/ben555](https://github.com/ben555)
+
 ## Copyright and license
 
 Copyright 2013 [NHS Education for Scotland](http://www.nes.scot.nhs.uk/).
