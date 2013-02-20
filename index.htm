@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" manifest="cache.manifest">
+    <head>
+        <meta charset="utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+        <title>ePortfolio</title>
+        <meta name="description" content="The NHS ePortfolio app for your mobile device, offline access to your ePortfolio."/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <link rel="shortcut icon" href="favicon.ico"/>
+        <meta name="msapplication-task" content="name=ePortfolio;action-uri=/;icon-uri=/favicon.ico"/>
+        <link rel="apple-touch-icon" href="apple-touch-icon-iphone.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-ipad.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-iphone-retina.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-ipad-retina.png" />
+        <link rel="apple-touch-startup-image" href="startup.png"/>
+
+        <!-- UPDATE cache.manifest WHEN ADDING/REMOVING STYLESHEETS -->
+        <link rel="stylesheet" href="css/vendor/jquery.mobile.min.css"/>
+        <link rel="stylesheet" href="css/eportfolio.css"/>
+
+        <!-- templates -->
+        <script type="text/template" id="login-template">
+        
+            <div data-role="header">
+                <h1>NHS ePortfolio</h1>
+
+                <a data-role="button" data-icon="info" href="#info">Info</a>
+            </div>
+
+            <div data-role="content">
+                <p>Login with your <a href="https://www.nhseportfolios.org/">NHS ePortfolio</a> account:</p>
+
+                <form autocomplete="off">
+                    <div data-role="fieldcontain">
+                        <label for="username">Username:</label><br/>
+                        <input type="text" name="username" id="username" required="required" placeholder="username" autocapitalize="off" autocomplete="off" autofocus="autofocus"/>
+                    </div>
+
+                    <div data-role="fieldcontain">
+                        <label for="password">Password:</label><br/>
+                        <input type="password" name="password" id="password" required="required" placeholder="password" autocapitalize="off" />
+                    </div>
+                    
+                    <label for="device">Is this a public (shared) device?</label>
+
+                    <div data-role="fieldcontain">
+                        <fieldset data-role="controlgroup" data-type="horizontal" >
+                            <input type="radio" name="device" id="device-public" value="public" required="required" /> 
+                            <label for="device-public" class="radio">Yes</label>
+                            <input type="radio" name="device" id="device-private" value="private" required="required" /> 
+                            <label for="device-private" class="radio">No</label>
+                        </fieldset>
+                    </div>
+
+                    <button type="submit" data-theme="b" id="login" data-inline="true" data-role="button">Login</button>
+                </form>
+
+                <footer><p>Copyright &copy; 2012 NHS Education for Scotland. <span class="error">Beta</span> Version 1.0.</p></footer>
+
+            </div>
+
+
+        </script>
+
+        <script type="text/template" id="info-template">
+        
+            <div data-role="header">
+                <h1>Information</h1>
+
+                <a href="#home" data-direction="reverse" class="badge" data-icon="home">Home</a>
+            </div>
+
+            <div data-role="content">
+                <p>Welcome to the <a href="https://www.nhseportfolios.org/">NHS ePortfolio</a> mobile app designed to work on
+                on all modern tablets and mobile devices that <a href="http://html5test.com/">support HTML5</a>.</p> 
+                
+                <p>Follow our Twitter feed <a href="http://twitter.com/NESePortfolio">@NESePortfolio</a> for updates and for submitting feedback.</p>
+                
+                <p>Email <a href="mailto:app@nhseportfolios.org">app@nhseportfolios.org</a> with support requests.
+
+                <footer><p>Copyright &copy; 2012 <a href="http://www.nes.scot.nhs.uk/">NHS Education for Scotland</a>. Beta Version 1.0.</p></footer>
+            </div>
+        </script>
+                    
+        <script type="text/template" id="user-template">
+            
+            <div data-role="header">
+                <a data-role="button" data-direction="reverse" href="#logout" data-icon="delete">Logout</a>
+
+                <h1>Home</h1>
+
+                <a data-role="button" data-icon="refresh" id="btnSync" data-theme="b" data-inline="true">Sync</a>
+            </div>
+            <div class="clearfix"></div>
+            <div data-role="content">
+                <div class="<%- syncItems.length == '0' ? 'hidden' : '' %> ">
+                    <%- syncItems.length == '0' ? '' : 'You have ' + syncItems.length + ' item' + (syncItems.length == '1' ? '' : 's') + ' to send to the server:' %>
+                                
+                    <div class="syncItems" data-role="collapsible-set"></div>
+                </div>
+
+                <p class="">
+                    You are logged in as <%- username %>, 
+                    
+                    <span class="normal hidden">
+                        you have <%- roleItems.length %> trainee portfolio<%- roleItems.length == 1 ? '' : 's' %>.
+                    </span>
+                    <span class="exception hidden">
+                        Sorry but you don't have any trainee roles! Currently this app only supports trainee roles with active posts.
+                    </span>
+                </p>
+            
+                <div class="roleItems"></div>
+
+            </div>
+        </script>
+
+        <script type="text/template" id="syncItem-template">
+            <div class="" data-role="collapsible" data-content-theme="d" data-theme="e">
+                <h3><%- date %></b> <%- status %></h3>
+                
+                <p><%- description %></p>
+            </div>
+        </script>
+
+        <script type="text/template" id="role-template">
+            <div data-role="collapsible" data-theme="a" data-collapsed="<%- role.get('id') == 0 ? 'false' : 'true' %>">
+                <h3><%- role.get('title') %> Portfolio</h3>
+        
+                <button data-role="button" class="ui-li-has-count" data-corners="true" data-iconpos="right" data-icon="arrow-r" class="tickets">
+                    Tickets
+                    (<%- tickets.length %>)
+                </button>
+                <button data-role="button" data-corners="true" data-iconpos="right" data-icon="arrow-r" disabled="disabled">Curricula</button>
+                <button data-role="button" data-corners="true" data-iconpos="right" data-icon="arrow-r" disabled="disabled">Assessments/SLEs</button>
+                <button data-role="button" data-corners="true" data-iconpos="right" data-icon="arrow-r" disabled="disabled">Reflection</button>
+                <button data-role="button" data-corners="true" data-iconpos="right" data-icon="arrow-r" disabled="disabled">Messaging</button>
+            </div>     
+        </script>
+
+        <script type="text/template" id="tickets-template">
+            
+            <div data-role="header">
+                <a href="javascript:history.go(-1)" data-direction="reverse" data-icon="back">Back</a>
+
+                <h1>Tickets</h1>
+
+                <a href="#home" data-direction="reverse" class="badge" data-icon="home">Home</a>
+            </div>
+                
+            <div data-role="content">
+                <p><a href="#addTicket" class="btn" data-role="button" data-corners="true" data-iconpos="right" data-icon="arrow-r" data-inline="true">Add Ticket</a></p>
+
+                <div class="items" id="ticketItems" data-role="collapsible-set">
+                </div>            
+            
+                <p class="hidden exception">You have no tickets</p>
+            </div>            
+        </script>
+        
+        <script type="text/template" id="ticket-template">
+            <h3>
+                <i class="icon-chevron-down"></i>
+                <%- Title %> sent to <%- TicketAssessorEmail %>
+                <!--sent to <a href="mailto:<%- TicketAssessorEmail %>"><%- TicketAssessorEmail %></a> -->
+            </h3> 
+                                            
+            <form>
+                <input type="hidden" name="ticketId" value="<%- id %>" />
+                <p>
+                    <b>Date:</b> <%- CreatedDate %> <br/>
+                    <b>Forms:</b> <%- Title %> <br/>
+                    <b>Login code:</b> <%- LoginCode %> <br/>
+                    <b>Status:</b> <%- Completed ? 'Completed' : 'Pending' %><br/>
+                    <b>Comment:</b> <%- Comment %><br>
+                    <a href="#" id="btnDeleteTicket" class="<%- Completed ? 'hidden' : '' %>" data-role="button" data-icon="delete" data-inline="true" data-mini="true" data-theme="b">Delete</a>
+                    <a href="#" id="btnSendReminder" class="<%- IsSendReminder ? '' : 'hidden' %>" data-role="button" data-icon="forward" data-inline="true" data-mini="true" data-theme="b">Send Reminder</a>
+                </p>
+            </form>
+        </script>
+
+        <script type="text/template" id="addTicket-template">
+            
+            <div data-role="header">
+                <a href="javascript:history.go(-1)" data-direction="reverse" data-icon="back">Back</a>
+
+                <h1>New Ticket</h1>
+
+                <a href="#home" data-direction="reverse" class="badge" data-icon="home">Home</a>
+            </div>
+
+            <div data-role="content">
+                <p>Please fill out the following assessor details:</p>
+
+                <form class="tickets" method="POST">
+                    <div data-role="fieldcontain">
+                        <label for="assessorName">Name (*):</label>
+                        <input required="required" name="assessorName" id="assessorName" placeholder="assessor name" type="text" autofocus="autofocus"/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="assessorEmail">Email (*):</label>
+                        <input required="required" name="assessorEmail" id="assessorEmail" placeholder="assessor email" type="email"/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="assessorDesignation">Designation (*):</label>
+                        <input required="required" name="assessorDesignation" id="assessorDesignation" placeholder="assessor designation" type="text"/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="assessorRegNum">Registration number (optional):</label>
+                        <input name="assessorRegNum" id="assessorRegNum" placeholder="assessor registration number" type="text"/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="assessorLocation">Location (*):</label>
+                        <input required="required" name="assessorLocation" id="assessorLocation" placeholder="assessor location" type="text"/>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="assessorComment">Comments (optional):</label>
+                        <textarea name="assessorComment" id="assessorComment" rows="5" cols="80"></textarea>
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="postId">Select a post:
+                            <select required="required" name="postId" id="postId"></select> </p>
+                        </label>
+                    </div>
+                    <div class="forms hidden">
+                        <p>Select a form:</p>
+                    </div>                        
+
+                    <button type="submit" data-theme="b">Submit Ticket</button>            
+                </form>
+            </div>
+        </script>
+
+        <!-- UPDATE cache.manifest WHEN ADDING/REMOVING SCRIPTS -->
+        <script type="text/javascript" src="js/vendor/jquery.js"></script>
+        <script type="text/javascript" src="js/jqm-config.js"></script>
+        <script type="text/javascript" src="js/vendor/jquery.mobile.min.js"></script>
+        <script type="text/javascript" src="js/vendor/jquery.base64.min.js"></script>
+        <script type="text/javascript" src="js/vendor/underscore.js"></script>
+        <script type="text/javascript" src="js/vendor/backbone.js"></script>
+        <script type="text/javascript" src="js/vendor/backbone.localStorage-min.js"></script>
+        <script type="text/javascript" src="js/vendor/bookmark_bubble.js"></script>
+        <script type="text/javascript" src="js/eportfolio.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="home">
+        </div> 
+        
+    </body>
+</html>
