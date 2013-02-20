@@ -6,6 +6,11 @@ This is the HTML5 mobile app for the [NHS ePortfolio](https://www.nhseportfolios
 
 Follow us on Twitter [@NESePortfolio](http://twitter.com/NESePortfolio).
 
+## Contributing
+
+Please email [app@nhseportfolios.org](mailto:app@nhseportfolios.org) if you are interested in helping.
+
+Thanks!
 ## Authors
 
 **Ben Collins**
